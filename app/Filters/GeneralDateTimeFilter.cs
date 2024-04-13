@@ -4,27 +4,25 @@ namespace app.Filters;
 
 public class GeneralDateTimeFilter : AbstractFilter
 {
-    private string[] _patterns = {"yyyy-MM-dd HH:mm:ss", "dd.MM.yyyy HH:mm:ss"};
-    public GeneralDateTimeFilter(string[] patterns)
+    private string _pattern;
+    public GeneralDateTimeFilter(string pattern)
     {
-        _patterns = patterns;
+        _pattern = pattern;
     }
 
     protected override bool Evaluate(object request)
     {
         bool result = false;
         DateTime dateTime;
-        foreach(string pattern in _patterns)
+
+        if (DateTime.TryParseExact(request as string, _pattern, new CultureInfo("en-US"),
+            DateTimeStyles.None, out dateTime))
         {
-            if (DateTime.TryParseExact(request as string, pattern, new CultureInfo("en-US"), 
-                DateTimeStyles.None, out dateTime))
+            if (ValidateYears(dateTime.Year) && ValidateMonths(dateTime.Month) &&
+                ValidateDays(ref dateTime) && ValidateHours(dateTime.Hour) && 
+                ValidateMinutes(dateTime.Minute) && ValidateSeconds(dateTime.Second))
             {
-                if (ValidateYears(dateTime.Year) && ValidateMonths(dateTime.Month) && ValidateDays(ref dateTime) &&
-                    ValidateHours(dateTime.Hour) && ValidateMinutes(dateTime.Minute) && ValidateSeconds(dateTime.Second))
-                {
-                    result = true;
-                }
-                break;
+                result = true;
             }
         }
         return result;
@@ -32,6 +30,7 @@ public class GeneralDateTimeFilter : AbstractFilter
 
     private static bool ValidateYears(int year)
     {
+        // Year 1951 is first commercial computer purchase year 
         return year > 1951 && year < DateTime.Now.Year + 1;
     }
 

@@ -4,13 +4,15 @@ namespace app.Filters;
 
 public class SpecificDateTimeFilter : AbstractFilter
 {
-    private string _pattern = "dd.MM.yyyy";
     private DateTime _start;
     private DateTime _end;
-    public SpecificDateTimeFilter(DateTime start, DateTime end)
+    private string _pattern;
+
+    public SpecificDateTimeFilter(DateTime start, DateTime end, string pattern)
     {
         _start = start;
         _end = end;
+        _pattern = pattern;
     }
 
     protected override bool Evaluate(object request)
